@@ -7,6 +7,17 @@
 
 template<typename T>
 class SLList {
+private:
+    class Node {
+    public:
+        Node(const T& d, Node* n = nullptr)
+            :data(d), next(n) {}
+        T data;
+        Node* next;
+    };
+    Node* sentinel;
+    int size_;
+
 public:
     SLList();
     SLList(T a[], int n);
@@ -17,26 +28,19 @@ public:
     void add(int index, T val);
     T remove(int i);
     bool empty();
+
+    // hw functions
     void print();
-
-    void addLast(T val);
-    void addFirst(T val);
-    void removeFirst();
-    void removeLast();
+    void increase();
+    void delRedundant();
 
 
-private:
-    class Node {
-    public:
-        Node(const T& d, Node* n = nullptr)
-            :data(d), next(n) {}
-    private:
-        T data;
-        Node* next;
-    };
-    Node sentinel;
-    int size_;
+    // void addLast(T val);
+    // void addFirst(T val);
+    // void removeFirst();
+    // void removeLast();
+    void reverse();
 };
 
-
+#include "SLList.cpp"
 #endif //DATA_STRUCTURE_SP26_SLLIST_H

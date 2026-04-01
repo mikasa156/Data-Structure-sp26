@@ -12,12 +12,10 @@ SLList<T>::SLList() {
 }
 
 template<typename T>
-SLList<T>::SLList(T a[], int n) {
-    SLList();
+SLList<T>::SLList(T a[], int n) : SLList() {
     for (int i = 0; i < n; i++) {
-
+        add(i, a[i]);
     }
-    size_ = n;
 }
 
 template<typename T>
@@ -37,7 +35,7 @@ int SLList<T>::size() {
 
 template<typename T>
 bool SLList<T>::empty() {
-    return size_ == 0;
+    return (sentinel->next == nullptr || size_ == 0);
 }
 
 template<typename T>
@@ -70,11 +68,11 @@ template<typename T>
 void SLList<T>::add(int index, T val) {
     // after index, that is:
     // index - newNode - index + 1
-    if (index < 0 || index >= size_) {
+    if (index < 0 || index > size_) {
         throw "invalid index";
     }
     Node* p = sentinel;
-    for (int i = 0; i <= index; i++) {
+    for (int i = 0; i < index; i++) {
         p = p->next;
     }
     Node* tmp_node = new Node(val, nullptr);
@@ -97,17 +95,77 @@ T SLList<T>::remove(int i) {
     for (int j = 0; j < i; j++) {
         p = p->next;
     }
-    T tmp = p->next->data;
-    p->next = p->next->next;
+    Node* to_delete = p->next;
+    T tmp = to_delete->data;
+    p->next = to_delete->next;
+    delete to_delete;
     size_--;
     return tmp;
 }
 
+
 template<typename T>
 void SLList<T>::print() {
     Node* p = sentinel;
-    while (p->next != nullptr) {
+    for (int i = 0; i < size_ - 1; i++) {
         p = p->next;
         std::cout << p->data << "->";
     }
+    p = p->next;
+    std::cout << p->data << '\n';
+}
+
+template<typename T>
+void SLList<T>::reverse() {
+    Node* prev = nullptr;
+    Node* curr = sentinel->next;
+    while (curr != nullptr) {
+        Node* next = curr->next;
+        curr->next = prev;
+        prev = curr;
+        curr = next;
+    }
+    sentinel->next = prev;
+}
+
+template<typename T>
+void SLList<T>::increase() {
+    while (sentinel->next != nullptr) {
+        Node* prev = sentinel; // prev node of minNode
+        Node* curr = sentinel;
+        while (curr->next != nullptr) {
+            if (curr->next->data < prev->next->data) {
+                prev = curr;
+            }
+            curr = curr->next;
+        }
+        Node* minNode = prev->next;
+        prev->next = prev->next->next;
+        std::cout << minNode->data << " ";
+        delete minNode;
+        size_--;
+    }
+    std::cout << '\n';
+}
+
+template<typename T>
+void SLList<T>::delRedundant() {
+    if (sentinel->next == nullptr) {
+        return;
+    }
+    Node* left = sentinel->next;
+    Node* right = sentinel->next->next;
+    while (right != nullptr) {
+        if (right->data != left->data) {
+            left->next = right;
+            left = right;
+            right = right->next;
+            continue;
+        }
+        Node* tmp = right;
+        right = right->next;
+        delete tmp;
+        size_--;
+    }
+    left->next = nullptr;
 }

@@ -1,5 +1,6 @@
 //
 // Created by 22172 on 2026/3/29.
+// GitHub repo: https://github.com/mikasa156/Data-Structure-sp26.git
 //
 
 #include "SeqList.h"
@@ -89,7 +90,48 @@ void SeqList<T>::print() {
     for (int i = 0; i < size_; i++) {
         std::cout << data[i] << " ";
     }
+    std::cout << std::endl;
 }
+
+/**
+ * helper function
+ */
+template<typename T>
+void swap(T& x, T& y) {
+    T tmp = x;
+    x = y;
+    y = tmp;
+}
+
+template<typename T>
+void SeqList<T>::removeX(T x) {
+    // data and length are attributes of SeqList
+    int left = 0;
+    int right = 0;
+    int count = 0;
+    while (right < size_) {
+        if (data[right] != x) {
+            swap(data[left], data[right]);
+            left++;
+            count++;
+        }
+        right++;
+    }
+    size_ = count;
+}
+
+template<typename T>
+void SeqList<T>::reverse() {
+    int left = 0;
+    int right = size_ - 1;
+    while (left < right) {
+        swap(data[left], data[right]);
+        left++;
+        right--;
+    }
+}
+
+
 
 
 
