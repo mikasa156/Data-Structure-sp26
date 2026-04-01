@@ -51,7 +51,7 @@ void removeX(T x) {
 关键部分同上，这里给出test代码。
 
 ```cpp
-#include "../implements/SeqList.h"
+#include "../Lists/SeqList.h"
 
 int main() {
     int a[5] = {1, 2, 3, 4, 5};
@@ -83,6 +83,8 @@ int main() {
 #### 基本思路
 
 对于顺序表，直接维护两个指针`left`和`right`，当`left < right`的时候交换元素即可。对于链表，遍历所有节点，将当前节点的next置为上一节点即可。由于是单链表，需要额外维护一个`prev`指针。
+
+**复杂度**：都只需要遍历一遍容器，都是$O(n)$
 
 #### 伪代码
 
@@ -120,8 +122,8 @@ void reverse() {
 关键代码如上，test代码：
 
 ```cpp
-#include "../implements/SLList.h"
-#include "../implements/SeqList.h"
+#include "../Lists/SLList.h"
+#include "../Lists/SeqList.h"
 
 int main() {
     int a[5]{1, 2, 3, 4, 5};
@@ -147,6 +149,8 @@ int main() {
 #### 基本思路
 
 维护两个指针`prev`和`curr`，分别指向最小节点的前置节点和当前节点。遍历链表，当`curr->next`值小于`prev->next`值时，更新`prev = curr`。最后用`minNode = prev->next`暂存最小节点，前置节点链接到`minNode`的下一节点，输出值并删除`minNode`即可。
+
+**复杂度**：依次遍历至多n, n-1, ... 1个节点，复杂度$O(n)$
 
 #### 伪代码
 
@@ -174,14 +178,14 @@ while (sentinel->next != nullptr) {
 关键代码如上，test代码：
 
 ```cpp
-#include "../implements/SLList.h"
+#include "../Lists/SLList.h"
 
 int main() {
     int a[10] = {3, 4, 4, 2, 1, 7, 8, 20, 15, 0};
     SLList<int> s(a, 10);
     s.print();
     s.increase();
-    std::cout << "isEmpty: " << bool(s.empty());
+    std::cout << "isEmpty: " << s.empty();
     return 0;
 }
 ```
@@ -203,6 +207,8 @@ int main() {
 相同时，先用临时指针暂存右指针，右指针更新为下一元素后删除临时指针；
 
 最后断尾，将左指针下一节点设为`nullptr`。
+
+**复杂度**：只用遍历一遍链表，复杂度$O(n)$
 
 #### 伪代码
 
@@ -234,7 +240,7 @@ void delRedunant() {
 test代码：
 
 ```cpp
-#include "../implements/SLList.h"
+#include "../Lists/SLList.h"
 
 int main() {
     int a[13] = {1, 1, 2, 2, 3, 3, 3, 4, 4, 5, 5, 5, 6};
@@ -250,5 +256,7 @@ int main() {
 
 ![image-20260401202855078](C:\Users\22172\AppData\Roaming\Typora\typora-user-images\image-20260401202855078.png)
 
+## 补充
 
+关键代码作为`SLList`和`SeqList`的成员函数实现，详见`.\Lists\SLList.cpp`和`.\Lists\SeqList.cpp`
 

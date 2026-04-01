@@ -2,7 +2,7 @@
 // Created by 22172 on 2026/4/1.
 //
 
-#include "../implements/SeqList.h"
+#include "../List/SeqList.h"
 
 int main() {
     int a[5] = {1, 2, 3, 4, 5};
