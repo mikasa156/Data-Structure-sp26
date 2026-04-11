@@ -2,7 +2,7 @@
 // Created by 22172 on 2026/4/1.
 //
 
-#include "../implements/SLList.h"
+#include "../Lists/SLList.h"
 
 int main() {
     int a[10] = {3, 4, 4, 2, 1, 7, 8, 20, 15, 0};

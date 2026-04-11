@@ -1,6 +1,6 @@
 # Data Structure hw2
 
-*杨其霄202300091132信计*
+
 
 ## Q3
 
@@ -89,7 +89,9 @@ int main() {
 #### 伪代码
 
 ```cpp
-// reverse of SeqList
+/** 
+ * reverse of SeqList
+ */
 void reverse() {
     int left = 0;
     int right = length - 1;
@@ -102,8 +104,10 @@ void reverse() {
 ```
 
 ```cpp
-// reverse of SLList
-// could use recuisive
+/** 
+ * reverse of SLList
+ * could use recuisive instead.
+ */
 void reverse() {
     Node* prev = nullptr;
     Node* curr = sentinel->next;
@@ -150,7 +154,7 @@ int main() {
 
 维护两个指针`prev`和`curr`，分别指向最小节点的前置节点和当前节点。遍历链表，当`curr->next`值小于`prev->next`值时，更新`prev = curr`。最后用`minNode = prev->next`暂存最小节点，前置节点链接到`minNode`的下一节点，输出值并删除`minNode`即可。
 
-**复杂度**：依次遍历至多n, n-1, ... 1个节点，复杂度$O(n)$
+**复杂度**：依次遍历至多n, n-1, ... 1个节点，复杂度$O(n^2)$
 
 #### 伪代码
 
@@ -258,5 +262,5 @@ int main() {
 
 ## 补充
 
-关键代码作为`SLList`和`SeqList`的成员函数实现，详见`.\Lists\SLList.cpp`和`.\Lists\SeqList.cpp`
+关键代码作为`SLList`和`SeqList`的成员函数实现，详见`".\Lists\SLList.cpp"`和`".\Lists\SeqList.cpp"`
 
