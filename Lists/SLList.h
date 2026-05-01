@@ -35,12 +35,14 @@ public:
     void delRedundant();
 
 
-    // void addLast(T val);
-    // void addFirst(T val);
-    // void removeFirst();
-    // void removeLast();
+    void addLast(T val);
+    void addFirst(T val);
+    T removeFirst();
+    T removeLast();
+
+    T getLast();
     void reverse();
 };
 
-#include "SLList.cpp"
+#include "SLList.tpp"
 #endif //DATA_STRUCTURE_SP26_SLLIST_H

@@ -29,6 +29,6 @@ private:
     int size_;
 };
 
-#include "SeqList.cpp"
+#include "SeqList.tpp"
 
 #endif //DATA_STRUCTURE_SP26_SEQLIST_H
