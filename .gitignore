@@ -6,6 +6,8 @@
 *.zip
 *.idea
 *.jpg
+*.txt
+*.iml
 
 cmake-build-debug
 

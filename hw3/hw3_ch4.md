@@ -53,7 +53,7 @@
 ```cpp
 bool isSubStr(string substr, string s) {
     if (substr.size() == 0) return true; // empty string
-    if (substr.size() > s.size()) return false; // sub-	     string is longer than s
+    if (substr.size() > s.size()) return false; // sub-string is 	longer than s
     int index = 0;
     for (const auto& item : s) {
         if (index == substr.size()) {
@@ -101,112 +101,108 @@ int main() {
 
 #### 基本思路
 
-1. 设二维数组的每一个元素是一个行向量。先遍历第j列元素，找出第j列最大的元素所在的行，设取出的最大值所在行集合为Sj。
+1. 给定矩阵`mat`，先遍历每一行，找到最小元素，加入到最小值向量`mins`中。再遍历每一列，找到最大元素，加入到最大值向量`maxs`中。
 
-2. 对Sj中每个行i，验证aij是否是i行最小元素，是则加入到鞍点集合。否则j++，转步骤1，继续操作，直到j==m。
+1. 访问矩阵每一个元素`mat[i][j]`，如果该元素既是当前行最小，也是当前列最大，即`mat[i][j] == mins[i] && mat[i][j] == maxs[j]`，那么其坐标就是鞍点，输出即可。注意数组坐标转为自然下标要加1即可。
+
 
 **复杂度分析**：
 
-1. 对某一列，遍历寻找最大元素是$O(n)$，再取出最大值行所在行集合也是$O(n)$的，总的是$O(n)+O(n)=O(n)$。
+1. 在预处理找最值阶段，对每一列找最大是$O(n)$，对每一行找最小是$O(m)$，总共就是：
 
-2. 对于Sj，从中取一行指标i，判断(i, j)是否是行最小元素的复杂度是$O(m)$。最坏情况下，一列中每个元素都相等时每个元素都是最大值元素，要对n个行指标分析。因此最坏复杂度就是$O(nm)$。
-3. 总共有m列，因此总共的复杂度就是：
+$m*O(n) + n*O(m) = O(mn)$
 
-$$
-O(m(n+nm))=O(nm + nm^2) = O(nm^2)
-$$
+2. 遍历每一个元素，总共有mn个，因此是$O(mn)$
+3. 总复杂度：$O(mn) + O(mn) = O(mn)$
 
 #### 伪代码
 
 ```cpp
-#include <vector>
-#include <utility>
-
-/** 检查某一值是否是某行最小值 */
-bool isMin(double val, std::vector<double>& vec) {
-    for (const auto& item : vec) {
-        if (val > item) return false;
-    }
-    return true;
-}
-
-auto findSaddle(std::vector<std::vector<double>> mat) {
-    int n = mat.size(); // 矩阵行数
-    int m = mat[0].size(); // 矩阵列数
-	
-    std::vector<std::pair<int, int>> saddle_points; // 输	出矩阵，存储鞍点坐标
-
-    for (int j = 0; j < m; j++) {
-        double j_max = mat[0][j]; // 第j列的最大值 
-        
-        std::vector<int> Sj; // 候选集，其中元素是第j列所有取		   到最大值的行 
- 
-        /**
-         * 对第j列，遍历所有行，如果矩阵在ij位置的值大于j_max，
-         * 更新j_max，将i加入Sj；
-         * 如果ij位置的值等于j_max，不更新，只将i加入Sj
-         */
-        for (int i = 0; i < n; i++) { 
-            if (mat[i][j] > j_max) {
-                j_max = mat[i][j];
-                Sj.clear();
-                Sj.push_back(i);
-            }
-            else if (mat[i][j] == j_max) { 
-                Sj.push_back(i);
+/** 找每一行的最小值 */
+auto rowMin(const std::vector<std::vector<double>>& mat) {
+    std::vector<double> mins; // 最小值向量
+    for (const auto& vec : mat) {
+        double min = vec[0];
+        for (const auto& x : vec) {
+            if (x < min) {
+                min = x;
             }
         }
-        
-        /**
-        * 取出Sj中所有的行i，判断矩阵在ij处的值是否
-        * 是第i行的最小值。如果是，那么将坐标(i, j)
-        * 加入输出数组'saddle_points'
-        */
-        for (const auto& r : Sj) {
-            if (isMin(mat[r][j], mat[r])) {
-                // cpp下标转自然下标要加一
-                std::pair<int, int> p{r+1, j+1};
+        mins.push_back(min);
+    }
+    return mins;
+}
+
+/** 找每一列的最大值 */
+auto columnMax(const std::vector<std::vector<double>>& mat) {
+    std::vector<double> maxs; // 最大值向量
+    for (int j = 0; j < mat[0].size(); j++) {
+        double max = mat[0][j];
+        for (const auto& vec : mat) {
+            if (vec[j] > max) {
+                max = vec[j];
+            }
+        }
+        maxs.push_back(max);
+    }
+    return maxs;
+}
+
+/** 遍历矩阵找鞍点 */
+auto findSaddle(const std::vector<std::vector<double>>& mat) {
+
+    std::vector<std::pair<int, int>> saddle_points; // 结果矩阵
+
+    auto mins = rowMin(mat);
+    auto maxs = columnMax(mat);
+
+    for (int i = 0; i < mat.size(); i++) {
+        for (int j = 0; j < mat[0].size(); j++) {
+            if (mat[i][j] == mins[i] && mat[i][j] == maxs[j]) {
+                std::pair<int, int> p {i + 1, j + 1};
                 saddle_points.push_back(p);
             }
         }
     }
     return saddle_points;
 }
-
 ```
 
 #### 代码
 
 ```cpp
+#include <iostream>
 #include <vector>
 #include <utility>
-#include <iostream>
 
-bool isMin(double val, std::vector<double>& vec);
-auto findSaddle(std::vector<std::vector<double>> mat);
+auto rowMin(const std::vector<std::vector<double>>& mat);
+auto columnMax(const std::vector<std::vector<double>>& mat);
+auto findSaddle(const std::vector<std::vector<double>>& mat);
 
+/** 打印结果 */
 void printPoints(std::vector<std::pair<int, int>> points) {
-    for (const auto& item : points) {
-        std::cout << "(" << item.first << ", " << item.second << ") ";
+    for (const auto& point : points) {
+        std::cout << "(" << point.first << ", " << point.second << ") ";
     }
+    std::cout << std::endl;
 }
 
-int main(){
+int main() {
     std::vector<std::vector<double>> mat {
-        {0, 0, 0, 0, 0},
-        {4, 4, 5, 6, 7},
-        {1, 3, 3, 3, 4},
-        {0, 0, 0, 0, 0}
+        {1, 1}, 
+        {1, 1}
     };
 
     std::vector<std::vector<double>> mat2 {
+        {1, 2, 2, 2, 2},
+        {0, 2, 0, 0, 0},
         {1, 2, 3, 4, 5},
-        {1, 1, 2, 2, 2},
+        {1, 1, 2, 2, 2}
     };
 
     printPoints(findSaddle(mat));
-    std::cout << std::endl;
     printPoints(findSaddle(mat2));
+
     return 0;
 }
 

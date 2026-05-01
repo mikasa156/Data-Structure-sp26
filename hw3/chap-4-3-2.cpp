@@ -1,73 +1,78 @@
+#include <iostream>
 #include <vector>
 #include <utility>
-#include <iostream>
 
-/** check if value is minimum in a row */
-bool isMin(double val, std::vector<double>& vec) {
-    for (const auto& item : vec) {
-        if (val > item) return false;
+auto rowMin(const std::vector<std::vector<double>>& mat) {
+    std::vector<double> mins;
+    for (const auto& vec : mat) {
+        double min = vec[0];
+        for (const auto& x : vec) {
+            if (x < min) {
+                min = x;
+            }
+        }
+        mins.push_back(min);
     }
-    return true;
+    return mins;
+}
+
+auto columnMax(const std::vector<std::vector<double>>& mat) {
+    std::vector<double> maxs;
+    for (int j = 0; j < mat[0].size(); j++) {
+        double max = mat[0][j];
+        for (const auto& vec : mat) {
+            if (vec[j] > max) {
+                max = vec[j];
+            }
+        }
+        maxs.push_back(max);
+    }
+    return maxs;
 }
 
 
-// vec is not empty
-auto findSaddle(std::vector<std::vector<double>> mat) {
-    int n = mat.size(); // rows of matrix
-    int m = mat[0].size(); // columns of matrix
+auto findSaddle(const std::vector<std::vector<double>>& mat) {
 
-    std::vector<std::pair<int, int>> saddle_points; // answers
+    std::vector<std::pair<int, int>> saddle_points;
 
-    for (int j = 0; j < m; j++) {
-        double j_max = mat[0][j]; // the max value in column j
-        std::vector<int> Sj; // sets of i such that mat[i][j] is maximum in column j
-        for (int i = 0; i < n; i++) { 
-            /*
-            * if current value is bigger than j_max, we update j_max
-            * and add row i into 'Sj'
-            */
-            if (mat[i][j] > j_max) {
-                j_max = mat[i][j];
-                Sj.clear();
-                Sj.push_back(i);
-            }
-            else if (mat[i][j] == j_max) { 
-                Sj.push_back(i);
-            }
-        }
-        for (const auto& r : Sj) {
-            if (isMin(mat[r][j], mat[r])) {
-                std::pair<int, int> p{r + 1, j + 1};
+    auto mins = rowMin(mat);
+    auto maxs = columnMax(mat);
+
+    for (int i = 0; i < mat.size(); i++) {
+        for (int j = 0; j < mat[0].size(); j++) {
+            if (mat[i][j] == mins[i] && mat[i][j] == maxs[j]) {
+                std::pair<int, int> p {i + 1, j + 1};
                 saddle_points.push_back(p);
             }
         }
     }
+
     return saddle_points;
 }
 
 void printPoints(std::vector<std::pair<int, int>> points) {
-    for (const auto& item : points) {
-        std::cout << "(" << item.first << ", " << item.second << ") ";
+    for (const auto& point : points) {
+        std::cout << "(" << point.first << ", " << point.second << ") ";
     }
+    std::cout << std::endl;
 }
 
 
-int main(){
+int main() {
     std::vector<std::vector<double>> mat {
-        {0, 0, 0, 0, 0},
-        {4, 4, 5, 6, 7},
-        {1, 3, 3, 3, 4},
-        {0, 0, 0, 0, 0}
+        {1, 1}, 
+        {1, 1}
     };
 
     std::vector<std::vector<double>> mat2 {
+        {1, 2, 2, 2, 2},
+        {0, 2, 0, 0, 0},
         {1, 2, 3, 4, 5},
-        {1, 1, 2, 2, 2},
+        {1, 1, 2, 2, 2}
     };
 
     printPoints(findSaddle(mat));
-    std::cout << std::endl;
     printPoints(findSaddle(mat2));
+
     return 0;
 }
-
