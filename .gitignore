@@ -4,10 +4,12 @@
 *.pdf
 *.rar
 *.zip
-*.idea
+
 *.jpg
 *.txt
 *.iml
+.idea/
+./.idea/
 
 cmake-build-debug
 

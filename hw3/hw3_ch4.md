@@ -1,7 +1,5 @@
 # Chapter 4
 
-*信计 杨其霄 202300091132*
-
 ## q2
 
 ![image-20260429200420223](C:\Users\yurino\AppData\Roaming\Typora\typora-user-images\image-20260429200420223.png)
@@ -66,8 +64,8 @@ bool isSubStr(string substr, string s) {
     return false;
 }
 
-bool isComSub(string substr, string s0, string s2) {
-    return isSubStr(substr, s0) && isSubStr(substr, s2);
+bool isComSub(string substr, string s1, string s2) {
+    return isSubStr(substr, s1) && isSubStr(substr, s2);
 }
 ```
 
@@ -210,7 +208,7 @@ int main() {
 
 **输出**：
 
-![image-20260430170026293](C:\Users\yurino\AppData\Roaming\Typora\typora-user-images\image-20260430170026293.png)
+![image-20260501154604278](C:\Users\yurino\AppData\Roaming\Typora\typora-user-images\image-20260501154604278.png)
 
 
 

@@ -1,5 +1,9 @@
 # Chapter 3
 
+> [!note]
+>
+> 数据结构hw3 信计 杨其霄 202300091132
+
 ## q2
 
 ![image-20260415150839107](C:\Users\yurino\AppData\Roaming\Typora\typora-user-images\image-20260415150839107.png)
@@ -25,11 +29,11 @@
 
 ![image-20260415152010578](C:\Users\yurino\AppData\Roaming\Typora\typora-user-images\image-20260415152010578.png)
 
-**基本思路**：教材版本的循环链表`tail`指针不指向哨兵节点，其本身指向尾节点，`tail.next`指向首节点。因此可有如下逻辑：
+**基本思路**：教材版本的循环链表`tail`指针指向尾节点，`tail.next`指向首节点。因此可有如下逻辑：
 
 - **入队**：当tail为nullptr时，直接对tail赋值即可。当tail不为nullptr时，先构建临时节点tmp_node，将tail后继设为tmp_node，最后更新tail为tmp_node。
   - 复杂度：$O(1)$
-- **出队**：1. queue为空，报错。2. queue长度为1，弹出tail即可。3. 否则，构建临时节点指向head节点，让tail的后继指向head的后继，删除临时节点。
+- **出队**：1. 若queue为空，报错。2. queue长度为1，弹出tail即可。3. 否则，构建临时节点指向head节点，让tail的后继指向head的后继，删除临时节点。
   - 复杂度：$O(1)$
 
 **伪代码**
@@ -37,10 +41,12 @@
 ```cpp
 template<typename T>
 void push(T x) {
-    if (tail == nullptr) {
+    if (tail == nullptr) { // 如果tail为空，直接构建节点
         tail = new Node(x, nullptr);
         tail->next = tail;
     } else {
+        // 插入tmp，tail->tmp->head
+        // 指向head的临时节点
         Node* tmp_node = new Node(x, tail->next);
         tail->next = tmp_node;
         tail = tmp_node;
@@ -50,10 +56,10 @@ void push(T x) {
 
 template<typename T>
 T pop() {
-    if (size_ == 0) { // the size of queue
+    if (size_ == 0) { // 队列为空
         throw std::runtime_error("Queue is empty.");
     }
-    if (size_ == 1) {
+    if (size_ == 1) { // 只有一个元素，直接弹出
         Node* tmp = tail;
         T val = tail->data;
         tail = nullptr;
@@ -61,16 +67,16 @@ T pop() {
         size_--;
         return val;
     }
-    Node* tmp = tail->next;
-    T val = tmp->data;
-    tail->next = tail->next->next;
+    Node* tmp = tail->next; // 指向当前头节点指针
+    T val = tmp->data; // 暂存头节点数据
+    tail->next = tail->next->next; // 指向新的头节点
     delete tmp;
     size_--;
 	return val;
 }
 ```
 
-**代码**：核心代码如上，相关代码在`..\Stacks\TLinkedQueue`中，其中核心逻辑封装在`..\Lists\TLinkedList`的`T removeFirst()`和`void addLast(T x)`中。这里给出test代码及结果。
+**代码**：核心代码如上，相关代码在`'..\Stacks\TLinkedQueue'`中，其中核心逻辑实现在`'..\Lists\TLinkedList'`的`T removeFirst()`和`void addLast(T x)`中。这里给出test代码及结果。
 
 ```cpp
 #include "../Stacks/TLinkedQueue.h"
@@ -103,26 +109,36 @@ int main() {
 
 ![image-20260416134544850](C:\Users\yurino\AppData\Roaming\Typora\typora-user-images\image-20260416134544850.png)
 
-**基本思路**：十进制转换为二进制到九进制的基本思路是做除法，有如下除法公式：
+**基本思路**：十进制转换为二进制到九进制的基本方法是做除法，根据除法公式：
 
 > 十进制数 / base = 商...余数
 
-不断将十进制数做除法，得到余数列，按照最后一个余数到第一个余数逆序输出就得到了对应的p进制数，这正好符合栈LIFO的特性。
+不断将十进制数做除法，得到余数列。按最后一个余数到第一个余数逆序输出，就得到p进制数。
 
-*算法*：当数num不为0时，计算除进制p的**商**和**余数**，将余数压进栈，更新num为商，最后不断从栈中取栈顶元素即可。
+*算法*：
 
-- 边界情况，当`num == 0`，直接返回0。当`num < 0`，应先将num取负，这样才能正确取模和做整数除法。
+0. 边界情况，当`num == 0`，直接返回0。当`num < 0`，先将num取负，这样才能正确取模和做整数除法。
 
-*注：对于负数的情况没有采取补码的操作，而是直接用负号表示*
+1. 当数num不为0时，计算除p的**商**和**余数**。
+
+2. 将余数压进栈，更新num为商。
+
+3. 重复步骤12，除到数为0后，不断从栈中取栈顶元素输出即可。
+
+*注：负数直接用负号表示，不使用补码*
 
 **伪代码**
 
 ```cpp
+/**
+* 输出原数num和进制p，输出转换后p进制数
+*/
 std::string dec_2_base(int num, int base) {
-    std::stack<int> p_num;
-    std::string ans;
+    std::stack<int> p_num; // 存余数的栈
+    std::string ans; // 结果字符串
+    
+    // 边界情况处理
     if (num == 0) {
-        // edge situation
         std::cout << "0" << std::endl;
         return "0";
     }
@@ -130,18 +146,23 @@ std::string dec_2_base(int num, int base) {
         ans = "-";
         num = -num;
     }
+    
     while (num != 0) {
-        int quotient = num / base;
-        int remainder = num % base;
-        p_num.push(remainder);
-        num = quotient;
+        int quotient = num / base; // 计算商
+        int remainder = num % base; // 计算余数
+        p_num.push(remainder); // 压入余数
+        num = quotient; // 更新数为商
     }
+    
+    // 结果出栈
     while (!p_num.empty()) {
         int top = p_num.top();
         p_num.pop();
         ans += std::to_string(top);
     }
+    
     std::cout << ans << std::endl;
+    
     return ans;
 } 
 
@@ -154,7 +175,6 @@ std::string dec_2_base(int num, int base) {
 #include <string>
 #include <iostream>
 
-// almost same as above, we omitted the definition here for simplicity
 std::string dec_2_base(int num, int base); 
 
 int main() {
@@ -169,7 +189,7 @@ int main() {
 
 ```
 
-运行结果如下，经检查是正确的：
+运行结果如下，括号里的数表示进制，经检查是正确的：
 
 ![image-20260417153133417](C:\Users\yurino\AppData\Roaming\Typora\typora-user-images\image-20260417153133417.png)
 
@@ -179,12 +199,20 @@ int main() {
 
 **基本思路**：初始化front和rear都为0，flag为0。
 
-- **push**：入队逻辑基本和教材一致。当入队后`front == rear`，说明队满，更新flag为1
-- **pop**：出队一样，基本逻辑和教材一致。注意出队则队列一定不为空，更新flag为0
+- **push**：入队逻辑基本和教材一致。如果入队后`front == rear`，说明队满，更新flag为1
+- **pop**：出队一样，基本逻辑和教材一致。注意能出队则队列一定不为空，更新flag为0
 
 **伪代码**
 
 ```cpp
+bool isFull() {
+    return front == rear && flag;
+}
+
+bool isEmpty() {
+    return front == rear && !flag;
+}
+
 void push(T x) {
     if (isFull()) {
         throw std::overflow_error("Queue is full.");
@@ -215,16 +243,16 @@ int main() {
     CirQueue<int> cqueue(v);
     cqueue.print();
 
-    cqueue.push(5);
+    cqueue.push(5); // 压入5
     cqueue.print();
 
-    cqueue.pop();
+    cqueue.pop(); // 弹出5
     cqueue.print();
 
-    cqueue.push(6);
+    cqueue.push(6); // 压入6
     cqueue.print();
 
-    cqueue.push(7);
+    cqueue.push(7); // 压入7
     
     return 0;
 }
