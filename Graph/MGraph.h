@@ -36,6 +36,7 @@ public:
     void print();
     std::vector<int> bfs();
     std::vector<int> dfs(); // traverse every node, rather than edge
+    std::vector<std::pair<int, int>> prim();
 };
 
 #include "MGraph.tpp"

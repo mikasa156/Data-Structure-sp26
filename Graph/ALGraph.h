@@ -28,12 +28,15 @@ private:
     std::vector<VexNode<T>> vertices_;
     void freeEdges();
     void buildFromMatrix(const std::vector<std::vector<T>>& matrix);
+    void dfsHelper(int v, std::vector<bool>& visited, std::vector<int>& ans);
 
 public:
     DirectedALGraph(int n, const std::vector<std::vector<T>>& matrix);
     DirectedALGraph(const std::string& csvFile);
     ~DirectedALGraph();
     void print();
+    std::vector<int> bfs();
+    std::vector<int> dfs();
 };
 
 template<typename T>
@@ -44,12 +47,15 @@ private:
     std::vector<VexNode<T>> vertices_;
     void freeEdges();
     void buildFromMatrix(const std::vector<std::vector<T>>& matrix);
+    void dfsHelper(int v, std::vector<bool>& visited, std::vector<int>& ans);
 
 public:
     UndirectedALGraph(int n, const std::vector<std::vector<T>>& matrix);
     UndirectedALGraph(const std::string& csvFile);
     ~UndirectedALGraph();
     void print();
+    std::vector<int> bfs();
+    std::vector<int> dfs();
 };
 
 #include "ALGraph.tpp"
