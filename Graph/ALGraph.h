@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 
+template<typename T> class UndirectedMGraph;
+
 template<typename T>
 struct EdgeNode {
     int adjVex_;
@@ -29,6 +31,7 @@ private:
     void freeEdges();
     void buildFromMatrix(const std::vector<std::vector<T>>& matrix);
     void dfsHelper(int v, std::vector<bool>& visited, std::vector<int>& ans);
+    void hasPathDfsHelper(int v, std::vector<bool>& visited, const int& target, bool& hasFound);
 
 public:
     DirectedALGraph(int n, const std::vector<std::vector<T>>& matrix);
@@ -37,6 +40,8 @@ public:
     void print();
     std::vector<int> bfs();
     std::vector<int> dfs();
+    bool hasPathBfs(int i, int j);
+    bool hasPathDfs(int i, int j);
 };
 
 template<typename T>
@@ -48,6 +53,7 @@ private:
     void freeEdges();
     void buildFromMatrix(const std::vector<std::vector<T>>& matrix);
     void dfsHelper(int v, std::vector<bool>& visited, std::vector<int>& ans);
+    void hasPathDfsHelper(int v, std::vector<bool>& visited, const int& target, bool& hasFound);
 
 public:
     UndirectedALGraph(int n, const std::vector<std::vector<T>>& matrix);
@@ -56,6 +62,10 @@ public:
     void print();
     std::vector<int> bfs();
     std::vector<int> dfs();
+    std::vector<int> dfs_iter();
+    UndirectedMGraph<T> toMatrix();
+    bool hasPathBfs(int i, int j);
+    bool hasPathDfs(int i, int j);
 };
 
 #include "ALGraph.tpp"

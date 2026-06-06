@@ -93,6 +93,38 @@ std::vector<int> DirectedMGraph<T>::dfs() {
     return ans;
 }
 
+template <typename T>
+bool DirectedMGraph<T>::hasPathBfs(int i, int j) {
+    // is i, j legal
+    if (i < 0 || i >= vexNum_ || j < 0 || j >= vexNum_) {
+        return false;
+    }
+
+    std::queue<int> queue;
+    std::vector<bool> visited(vexNum_, false);
+
+    queue.push(i);
+    visited[i] = true;
+
+    while (!queue.empty()) {
+        int v = queue.front();
+        if (v == j) {
+            return true;
+        }
+        queue.pop();
+
+        for (int k = 0; k < vexNum_; k++) {
+            if (!visited[k] && matrix_[v][k]) {
+                visited[k] = true;
+                queue.push(k);
+            }
+        }
+    }
+
+    return false;
+
+}
+
 
 // ---------- UndirectedMGraph ----------
 

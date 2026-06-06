@@ -3,8 +3,10 @@
 
 #include "ALGraph.h"
 #include "GraphDetail.h"
+#include "MGraph.h"
 #include <iostream>
 #include <queue>
+#include <stack>
 
 // ---------- DirectedALGraph ----------
 
@@ -89,7 +91,6 @@ std::vector<int> DirectedALGraph<T>::bfs() {
     while (!queue.empty()) {
         int t = queue.front();
         ans.push_back(t);
-        visited[t] = true;
         queue.pop();
 
         EdgeNode<T>* p = vertices_[t].firstEdge_;
@@ -128,6 +129,75 @@ std::vector<int> DirectedALGraph<T>::dfs() {
 
     dfsHelper(0, visited, ans);
     return ans;
+}
+
+template <typename T>
+bool DirectedALGraph<T>::hasPathBfs(int i, int j) {
+    if (i < 0 || i >= vexNum_ || j < 0 || j >= vexNum_) {
+        return false;
+    }
+    if (i == j) {
+        return true;
+    }
+
+    std::queue<int> queue;
+    std::vector<bool> visited(vexNum_, false);
+
+    queue.push(i);
+    visited[i] = true;
+
+    while (!queue.empty()) {
+        int v = queue.front();
+        queue.pop();
+
+        EdgeNode<T>* p = vertices_[v].firstEdge_;
+        while (p != nullptr) {
+            int t = p->adjVex_;
+            if (!visited[t]) {
+                if (t == j) {
+                    return true;        // 入队前判断，省一轮循环
+                }
+                visited[t] = true;
+                queue.push(t);
+            }
+            p = p->next_;
+        }
+    }
+
+    return false;
+}
+
+template <typename T>
+void DirectedALGraph<T>::hasPathDfsHelper(int v, std::vector<bool>& visited, const int& target, bool& hasFound) {
+    if (v == target) {
+        hasFound = true;
+        return;
+    }
+
+    EdgeNode<T>* p = vertices_[v].firstEdge_;
+    while (p != nullptr) {
+        int t = p->adjVex_;
+        if (!visited[t]) {
+            visited[t] = true;
+            hasPathDfsHelper(t, visited, target, hasFound);
+            if (hasFound) return;
+        }
+        p = p->next_;
+    }
+}
+
+template <typename T>
+bool DirectedALGraph<T>::hasPathDfs(int i, int j) {
+    if (i < 0 || i >= vexNum_ || j < 0 || j >= vexNum_) {
+        return false;
+    }
+
+    std::vector<bool> visited(vexNum_, false);
+    visited[i] = true;
+    bool hasFound = false;
+    hasPathDfsHelper(i, visited, j, hasFound);
+    return hasFound;
+
 }
 
 // ---------- UndirectedALGraph ----------
@@ -211,7 +281,6 @@ std::vector<int> UndirectedALGraph<T>::bfs() {
     while (!queue.empty()) {
         int t = queue.front();
         ans.push_back(t);
-        visited[t] = true;
         queue.pop();
 
         EdgeNode<T>* p = vertices_[t].firstEdge_;
@@ -230,13 +299,12 @@ std::vector<int> UndirectedALGraph<T>::bfs() {
 
 template<typename T>
 void UndirectedALGraph<T>::dfsHelper(int v, std::vector<bool> &visited, std::vector<int> &ans) {
-    visited[v] = true;
-    ans.push_back(v);
-
     EdgeNode<T>* p = vertices_[v].firstEdge_;
     while (p != nullptr) {
         int t = p->adjVex_;
         if (!visited[t]) {
+            visited[t] = true;
+            ans.push_back(t);
             dfsHelper(t, visited, ans);
         }
         p = p->next_;
@@ -251,5 +319,122 @@ std::vector<int> UndirectedALGraph<T>::dfs() {
     dfsHelper(0, visited, ans);
     return ans;
 }
+
+template <typename T>
+std::vector<int> UndirectedALGraph<T>::dfs_iter() {
+    std::vector<bool> visited(vexNum_, false);
+    std::vector<int> ans;
+    std::stack<int> stack;
+
+    stack.push(0);
+    visited[0] = true;
+
+    while (!stack.empty()) {
+        int top = stack.top();
+        stack.pop();
+        ans.push_back(top);
+
+        EdgeNode<T>* p = vertices_[top].firstEdge_;
+        while (p != nullptr) {
+            int v = p->adjVex_;
+            if (!visited[v]) {
+                visited[v] = true;
+                stack.push(v);
+            }
+            p = p->next_;
+        }
+    }
+    return ans;
+}
+
+
+template <typename T>
+UndirectedMGraph<T> UndirectedALGraph<T>::toMatrix() {
+    std::vector<std::vector<T>> matrix(vexNum_, std::vector<T>(vexNum_, 0));
+    for (int i = 0; i < vexNum_; i++) {
+        EdgeNode<T>* p = vertices_[i].firstEdge_;
+        while (p != nullptr) {
+            int j = p->adjVex_;
+            matrix[i][j] = p->weight_;
+            matrix[j][i] = p->weight_;
+            p = p->next_;
+        }
+    }
+    return UndirectedMGraph<T>(vexNum_, matrix);
+}
+
+template <typename T>
+bool UndirectedALGraph<T>::hasPathBfs(int i, int j) {
+    if (i < 0 || i >= vexNum_ || j < 0 || j >= vexNum_) {
+        std::cout << "(" << i << ", " << j << ") path: false\n";
+        return false;
+    }
+    if (i == j) {
+        std::cout << "(" << i << ", " << j << ") path: true\n";
+        return true;
+    }
+
+    std::queue<int> queue;
+    std::vector<bool> visited(vexNum_, false);
+
+    queue.push(i);
+    visited[i] = true;
+
+    while (!queue.empty()) {
+        int v = queue.front();
+        queue.pop();
+
+        EdgeNode<T>* p = vertices_[v].firstEdge_;
+        while (p != nullptr) {
+            int t = p->adjVex_;
+            if (!visited[t]) {
+                if (t == j) {
+                    std::cout << "(" << i << ", " << j << ") path: true\n";
+                    return true;        // 入队前判断，省一轮循环
+                }
+                visited[t] = true;
+                queue.push(t);
+            }
+            p = p->next_;
+        }
+    }
+
+    std::cout << "(" << i << ", " << j << ") path: false\n";
+    return false;
+}
+
+template <typename T>
+void UndirectedALGraph<T>::hasPathDfsHelper(int v, std::vector<bool>& visited, const int& target, bool& hasFound) {
+    if (v == target) {
+        hasFound = true;
+        return;
+    }
+
+    EdgeNode<T>* p = vertices_[v].firstEdge_;
+    while (p != nullptr) {
+        int t = p->adjVex_;
+        if (!visited[t]) {
+            visited[t] = true;
+            hasPathDfsHelper(t, visited, target, hasFound);
+            if (hasFound) return;
+        }
+        p = p->next_;
+    }
+}
+
+template <typename T>
+bool UndirectedALGraph<T>::hasPathDfs(int i, int j) {
+    if (i < 0 || i >= vexNum_ || j < 0 || j >= vexNum_) {
+        return false;
+    }
+
+    std::vector<bool> visited(vexNum_, false);
+    visited[i] = true;
+    bool hasFound = false;
+    hasPathDfsHelper(i, visited, j, hasFound);
+    return hasFound;
+
+}
+
 
 #endif // DATA_STRUCTURE_SP26_ALGRAPH_TPP

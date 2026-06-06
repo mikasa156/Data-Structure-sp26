@@ -19,6 +19,7 @@ public:
     void print();
     std::vector<int> bfs();
     std::vector<int> dfs();
+    bool hasPathBfs(int i, int j);
 };
 
 template<typename T>
